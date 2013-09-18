@@ -6,6 +6,7 @@ and Corpus Statistics" Yuhua Li et al, 2006.
 
 Still working in progress...
 ----------------------------
+Current version can only calculate path length distance similarity in synsets graph
 
 
 Dependencies
