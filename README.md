@@ -28,4 +28,9 @@ You will need to download Wordnet3.0/3.1 dictionary and config path in wn.h
   e.g. 
    
     #define DEFAULTPATH	"C:\\Users\\XinL\\Downloads\\libs\\WordNet-3.0\\dict"
+    
+    
+Contact
+-------
+tonyxliu at hotmail.co.uk
 
