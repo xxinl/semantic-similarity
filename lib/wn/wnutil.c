@@ -63,6 +63,28 @@ int wninit(void)
     return(openerr);
 }
 
+int wninit2(char* path)
+{
+    static int done = 0;
+    static int openerr = 0;
+    char *env;
+
+    if (!done) {
+	if (env = getenv("WNDBVERSION")) {
+	    wnrelease = _strdup(env);	/* set release */
+	    assert(wnrelease);
+	}
+	openerr = do_init2(path);
+	if (!openerr) {	
+	    done = 1;	
+	    OpenDB = 1;
+	    openerr = morphinit();
+	}
+    }
+
+    return(openerr);
+}
+
 int re_wninit(void)
 {
     int openerr;
@@ -155,6 +177,82 @@ static int do_init(void)
     else
 	strcpy(searchdir, DEFAULTPATH);
 #endif
+
+    for (i = 1; i < NUMPARTS + 1; i++) {
+	sprintf(tmpbuf, DATAFILE, searchdir, partnames[i]);
+	if((datafps[i] = fopen(tmpbuf, "r")) == NULL) {
+	    sprintf(msgbuf,
+		    "WordNet library error: Can't open datafile(%s)\n",
+		    tmpbuf);
+	    display_message(msgbuf);
+	    openerr = -1;
+	}
+	sprintf(tmpbuf, INDEXFILE, searchdir, partnames[i]);
+	if((indexfps[i] = fopen(tmpbuf, "r")) == NULL) {
+	    sprintf(msgbuf,
+		    "WordNet library error: Can't open indexfile(%s)\n",
+		    tmpbuf);
+	    display_message(msgbuf);
+	    openerr = -1;
+	}
+    }
+
+    /* This file isn't used by the library and doesn't have to
+       be present.  No error is reported if the open fails. */
+
+    sprintf(tmpbuf, SENSEIDXFILE, searchdir);
+    sensefp = fopen(tmpbuf, "r");
+
+    /* If this file isn't present, the runtime code will skip printint out
+       the number of times each sense was tagged. */
+
+    sprintf(tmpbuf, CNTLISTFILE, searchdir);
+    cntlistfp = fopen(tmpbuf, "r");
+
+    /* This file doesn't have to be present.  No error is reported if the
+       open fails. */
+
+    sprintf(tmpbuf, KEYIDXFILE, searchdir);
+    keyindexfp = fopen(tmpbuf, "r");
+
+    sprintf(tmpbuf, REVKEYIDXFILE, searchdir);
+    revkeyindexfp = fopen(tmpbuf, "r");
+
+    sprintf(tmpbuf, VRBSENTFILE, searchdir);
+    if ((vsentfilefp = fopen(tmpbuf, "r")) == NULL) {
+	sprintf(msgbuf,
+"WordNet library warning: Can't open verb example sentence file(%s)\n",
+		tmpbuf);
+	display_message(msgbuf);
+    }
+
+    sprintf(tmpbuf, VRBIDXFILE, searchdir);
+    if ((vidxfilefp = fopen(tmpbuf, "r")) == NULL) {
+	sprintf(msgbuf,
+"WordNet library warning: Can't open verb example sentence index file(%s)\n",
+		tmpbuf);
+	display_message(msgbuf);
+    }
+
+    return(openerr);
+}
+
+// added by Xin
+static int do_init2(char* path)
+{
+    int i, openerr;
+    char searchdir[256], tmpbuf[256];
+
+#ifdef _WINDOWS
+    HKEY hkey;
+    DWORD dwType, dwSize;
+#else
+    char *env;
+#endif
+ 
+    openerr = 0;
+		
+	sprintf(searchdir, path);
 
     for (i = 1; i < NUMPARTS + 1; i++) {
 	sprintf(tmpbuf, DATAFILE, searchdir, partnames[i]);

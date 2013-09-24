@@ -210,6 +210,9 @@ typedef struct ss {
     struct ss *ptrlist;		/* ptr to synset list result of search */
     char *headword;		/* if pos is "s", this is cluster head word */
     short headsense;		/* sense number of headword */
+
+		// TODO move this into a inherited struct
+		int depth; /* added by Xin, depth of the synset in a graph*/
 } Synset;
 
 typedef Synset *SynsetPtr;
@@ -350,6 +353,9 @@ extern char *morphword(char *, int);
 /* Top level function to open database files, initialize wn_filenames,
    and open exeception lists. */
 extern int wninit();		
+
+// Xin Added
+extern int wninit2(char* path);	
 
 /* Top level function to close and reopen database files, initialize
    wn_filenames and open exception lists. */
