@@ -15,8 +15,7 @@
 
 class SentenceSimilarity {
 
- private:      
-      
+ private:
 
  public:
   ///// Constructor 

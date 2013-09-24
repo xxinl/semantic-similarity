@@ -14,12 +14,18 @@
 
 typedef WordnetExtended we;
 
+
+///Li et al.(2006) 3.1.3
+const float _S_ALPHA = 0.2;
+const float _S_BETA = 0.45;
+
 SentenceSimilarityLi2006::SentenceSimilarityLi2006(){}
 SentenceSimilarityLi2006::~SentenceSimilarityLi2006(){}
 
-extern void print_graph(const we::UndirectedGraph & g);
+//extern void print_graph(const we::UndirectedGraph & g);
 
 float get_cosine_similarity(const std::vector<float> & sim1, const std::vector<float> & si2);
+float calc_sim(int length, int depth);
 
 float SentenceSimilarityLi2006::compute_similarity(const std::string & s1, const std::string & s2)
 {
@@ -50,47 +56,61 @@ float SentenceSimilarityLi2006::compute_similarity(const std::string & s1, const
 
 	// build corpus graph
 	we.build_synset_adjacency_list(corpus, graph);
-	print_graph(graph);
+	//print_graph(graph);
 
 	// semilarity vectors
 	std::vector<float> sim1(corpus.size()), sim2(corpus.size());
-
-	// build similarity vectors for s1 & s3
+	
+	// build similarity vectors for s1
 	for(std::vector<std::string>::iterator it = corpus.begin(); it != corpus.end(); ++it)
 	{
-		// s1
+		// build similarity vectors for s1
 		if(std::find(v1.begin(), v1.end(), *it) == v1.end()) 
 		{
-			// loop all words in s1 to get the min path length(synset distance)
-			int min_path_len = INT_MAX;
+			// loop all words in s1 to get the synset has max similarity
+			float max_sim = 0;
 			for(std::vector<std::string>::iterator it_t1 = v1.begin(); it_t1 != v1.end(); ++it_t1)
 			{
-				int path_len = we.compute_distance(graph, *it_t1, *it);
-				if(path_len < min_path_len)
-					min_path_len = path_len;
+				we::vertex_t v_it_t1, v_it;
+				int path_len = we.compute_distance(graph, *it_t1, *it, v_it_t1, v_it);
+				// if both *it_t1 and *it are in the graph
+				if(path_len != INT_MAX && v_it_t1 != -1 && v_it != -1)
+				{
+					int depth = graph[v_it_t1]->depth;
+					float sim = calc_sim(path_len, depth);
+					if(max_sim < sim)
+						max_sim = sim;
+				}
 			}
 
 			// +1 to smooth 0 lenth
-			sim1.push_back(exp(0 - min_path_len - 1));
+			sim1.push_back(max_sim);
 		}
 		else{
 			sim1.push_back(1);
 		}
 
-		// s2
+		// build similarity vectors for s2
 		if(std::find(v2.begin(), v2.end(), *it) == v2.end()) 
 		{
-			// loop all words in s1 to get the min path length(synset distance)
-			int min_path_len = INT_MAX;
+			// loop all words in s1 to get the synset has max similarity
+			float max_sim = 0;
 			for(std::vector<std::string>::iterator it_t2 = v2.begin(); it_t2 != v2.end(); ++it_t2)
 			{
-				int path_len = we.compute_distance(graph, *it_t2, *it);
-				if(path_len < min_path_len)
-					min_path_len = path_len;
+				we::vertex_t v_it_t2, v_it;
+				int path_len = we.compute_distance(graph, *it_t2, *it, v_it_t2, v_it);
+				// if both *it_t1 and *it are in the graph
+				if(path_len != INT_MAX && v_it_t2 != -1 && v_it != -1)
+				{					
+					int depth = graph[v_it_t2]->depth;
+					float sim = calc_sim(path_len, depth);
+					if(max_sim < sim)
+						max_sim = sim;
+				}
 			}
 
 			// +1 to smooth 0 lenth
-			sim2.push_back(exp(0 - min_path_len - 1));
+			sim2.push_back(max_sim);
 		}
 		else{
 			sim2.push_back(1);
@@ -114,4 +134,17 @@ float get_cosine_similarity(const std::vector<float> & sim1, const std::vector<f
 	}
 
 	return numerator / (sqrt(denominator1) * sqrt(denominator2));
+}
+
+// Li et al.(2006) 3.1.3
+float calc_sim(int length, int depth)
+{
+	// +1 to smooth 0 lenth
+	length ++;
+
+	float length_sim = exp(_S_ALPHA * (0 - length));
+	float depth_sim = (exp(_S_BETA * depth) - exp(_S_BETA * (0 - depth))) 
+		/ (exp(_S_BETA * depth) + exp(_S_BETA * (0 - depth)));
+
+	return length_sim * depth_sim;
 }

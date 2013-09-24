@@ -7,12 +7,19 @@
 
 #include <math.h>  
 
+#include <boost/graph/breadth_first_search.hpp>
+
 #include "wordnet_extended.h"
+
+
+void mark_edge_depth(const WordnetExtended::vertex_t v, const WordnetExtended::UndirectedGraph & g, int depth,
+										 std::vector<WordnetExtended::vertex_t> & passed_vertices);
 
 
 // TODO should check and ensure all pointers get deleted at appropriate time, and if any memory leak
 void WordnetExtended::build_synset_adjacency_list(const std::vector<std::string> & words, UndirectedGraph &adj_list)
 {	
+	// TODO debug to here always true
 	if(!OpenDB)
 	{
 		// wninit return 0 as no error
@@ -25,6 +32,9 @@ void WordnetExtended::build_synset_adjacency_list(const std::vector<std::string>
 
 	// http://stackoverflow.com/questions/8274451/well-how-does-the-custom-deleter-of-stdunique-ptr-work
 	//auto delSynset = [](Synset * p) { free_synset(p); };
+
+	// list of root synset vertex ptr, this will be used later for depth calculation
+	std::vector<vertex_t> root_vertices;
 
 	for(std::vector<std::string>::const_iterator it = words.begin(); it != words.end(); ++it)
 	{
@@ -50,27 +60,42 @@ void WordnetExtended::build_synset_adjacency_list(const std::vector<std::string>
 					vertex_t pre_vertex = -1;
 					// loop all hyper for each sense
 					while(synset_hyper_ptr != nullptr)
-					{							
+					{	
 						vertex_t v = find_vertex(adj_list, synset_hyper_ptr->hereiam, synset_hyper_ptr->pos);
-						if(v == -1)
+
+						bool found = 0;
+						// if v exist in graph break current hyper loop and move to next sense
+						if(v != -1)
+							found = 1;
+						else
 						{
+							// add in new synset vertex and edge if doesn't exist in graph
+
 							//http://www.boost.org/doc/libs/1_54_0/libs/graph/example/undirected_adjacency_list.cpp
 							v = boost::add_vertex(adj_list);
 							adj_list[v] = synset_hyper_ptr;
 						}
 
-						if(pre_vertex != -1 && !boost::edge(pre_vertex, v, adj_list).second)
+						//if(pre_vertex != -1 && !boost::edge(pre_vertex, v, adj_list).second)
+						if(pre_vertex != -1)
 						{							
 							edge_t e; bool b;
 							boost::tie(e, b) = boost::add_edge(pre_vertex, v, 1, adj_list);
-						}
+						}							
 
 						pre_vertex = v;
+
+						// if v exist in graph break current hyper loop and move to next sense
+						if(found) break;
 
 						// TODO handle the case when more than one HYPERPTR synset. see http://wordnet.princeton.edu/man/wnsearch.3WN.html#sect3 
 						// move to next hyper sense
 						synset_hyper_ptr = SynsetPtrS(synset_hyper_ptr->ptrlist);
 					}
+
+					// if the last synset the hyper hierarchy push it to root_vertices
+					if(synset_hyper_ptr == nullptr)
+						root_vertices.push_back(pre_vertex); // in this case: pre_vertex === v
 
 					// move to next sibling sense
 					synset_ptr = SynsetPtrS(synset_ptr->nextss);
@@ -78,10 +103,22 @@ void WordnetExtended::build_synset_adjacency_list(const std::vector<std::string>
 			}
 		}
 	}
+
+	// record vertext that already been checked
+	std::vector<vertex_t> passed_vertices;
+
+	// update edge weight using depth to its root synset
+	for(std::vector<WordnetExtended::vertex_t>::iterator it = root_vertices.begin(); it != root_vertices.end(); ++it)
+		mark_edge_depth(*it, adj_list, 1, passed_vertices);
 }
 
-int WordnetExtended::compute_distance(const UndirectedGraph &adj_list, const std::string & w1, const std::string & w2)
+int WordnetExtended::compute_distance(const UndirectedGraph &adj_list, const std::string & w1, const std::string & w2,
+																				vertex_t & v_w1, vertex_t & v_w2)
 {
+	// if not found return -1;
+	v_w1 = -1;
+	v_w2 = -1;
+
 	// processed vertex index map
 	std::vector<vertex_t> p(boost::num_vertices(adj_list));
 	// distance map
@@ -101,6 +138,7 @@ int WordnetExtended::compute_distance(const UndirectedGraph &adj_list, const std
 			{
 				v1 = *vi;
 				found = 1;
+				v_w1 = *vi;
 				break;
 			}
 		}
@@ -130,6 +168,7 @@ int WordnetExtended::compute_distance(const UndirectedGraph &adj_list, const std
 			{
 				ret_dis = d[*vi];
 				found = 1;
+				v_w2 = *vi;
 				break;
 			}
 		}
@@ -164,8 +203,6 @@ void WordnetExtended::normalization(std::vector<std::string> & v)
 		}
 	}
 
-	morphinit();
-
 	std::string word;
 	for(std::vector<std::string>::iterator it = v.begin(); it != v.end(); ++it)
 	{
@@ -184,5 +221,27 @@ void WordnetExtended::normalization(std::vector<std::string> & v)
 				}
 			}
 		}
+	}
+}
+
+// update edge weight using depth 
+//   depth fisrt loop
+// TODO pass w_map as pointer
+void mark_edge_depth(const WordnetExtended::vertex_t v, const WordnetExtended::UndirectedGraph & g, int depth,
+										 std::vector<WordnetExtended::vertex_t> & passed_vertices)
+{	
+	passed_vertices.push_back(v);
+
+	boost::graph_traits<WordnetExtended::UndirectedGraph>::out_edge_iterator eo, eo_end;
+	for (boost::tie(eo, eo_end) = out_edges(v, g); eo != eo_end; ++eo)
+	{		
+		WordnetExtended::vertex_t s  = source(*eo, g);
+		WordnetExtended::vertex_t t  = target(*eo, g);
+
+		g[s] -> depth = depth;
+		if(std::find(passed_vertices.begin(), passed_vertices.end(), t) != passed_vertices.end())
+			continue;
+
+		mark_edge_depth(t, g, depth + 1, passed_vertices);
 	}
 }
