@@ -5,10 +5,6 @@ C++ tool lib to calculate semantic similarity between two sentences using method
 *"Sentence Similarity Based on Semantic Nets and Corpus Statistics" Yuhua Li et al, 2006.*
 
 
-###Still working in progress...
-Current version can only calculate path length distance similarity in synsets graph
-
-
 ###Dependencies
 Boost and Wordnet C API
 
