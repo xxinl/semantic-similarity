@@ -16,7 +16,7 @@
 #ifdef _WINDOWS
 #define DICTDIR         "\\dict"
 #ifndef DEFAULTPATH
-#define DEFAULTPATH	"C:\\Users\\XinL\\Downloads\\libs\\WordNet-3.0\\dict"
+#define DEFAULTPATH	"C:\\Users2\\XinL\\Downloads\\libs\\WordNet-3.0\\dict"
 #endif
 #define DATAFILE	"%s\\data.%s"
 #define INDEXFILE	"%s\\index.%s"
@@ -338,6 +338,9 @@ extern char *do_trace(SynsetPtr, int, int, int);
 
 /* Open exception list files */
 extern int morphinit();	
+
+// Xin added
+extern int morphinit2(char* string);	
 
 /* Close exception list files and reopen */
 extern int re_morphinit();	

@@ -23,9 +23,9 @@ private:
 
 public:
 	///// Constructor 
-	WordnetExtended()
+	WordnetExtended(std::string dict_path)
 	{
-		//DICT_PATH = dict_path;
+		DICT_PATH = dict_path;
 	};
 
 	/// Destructor
@@ -39,7 +39,7 @@ public:
 	typedef boost::graph_traits < UndirectedGraph >::vertex_descriptor vertex_t;
 	typedef boost::graph_traits < UndirectedGraph >::edge_descriptor edge_t;
 
-	//std::string DICT_PATH;
+	std::string DICT_PATH;
 
 	///
 	/// c++ notes: use pointers if you want to do arithmetic with them or if you ever have to pass a NULL-pointer.
@@ -54,7 +54,7 @@ public:
 	/// return whether a synset already exist in graph
 	vertex_t find_vertex(const UndirectedGraph & adj_list, long hereiam, char *pos);
 
-	void normalization(std::vector<std::string> & v);
+	void normalization(std::vector<std::string> &);
 };
 
 #endif

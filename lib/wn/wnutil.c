@@ -78,7 +78,7 @@ int wninit2(char* path)
 	if (!openerr) {	
 	    done = 1;	
 	    OpenDB = 1;
-	    openerr = morphinit();
+	    openerr = morphinit2(path);
 	}
     }
 
@@ -242,14 +242,7 @@ static int do_init2(char* path)
 {
     int i, openerr;
     char searchdir[256], tmpbuf[256];
-
-#ifdef _WINDOWS
-    HKEY hkey;
-    DWORD dwType, dwSize;
-#else
-    char *env;
-#endif
- 
+		
     openerr = 0;
 		
 	sprintf(searchdir, path);

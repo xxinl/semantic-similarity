@@ -96,6 +96,23 @@ int morphinit(void)
     return(openerr);
 }
 
+// Xin added
+int morphinit2(char* path)
+{
+    static int done = 0;
+    static int openerr = 0;
+
+    if (!done) {
+      if (OpenDB) {		/* make sure WN database files are open */
+            if (!(openerr = do_init2(path)))
+	        done = 1;
+	} else
+	    openerr = -1;
+    }
+
+    return(openerr);
+}
+
 /* Close exception list files and reopen */
 int re_morphinit(void)
 {
@@ -152,6 +169,30 @@ static int do_init(void)
     else
 	strcpy(searchdir, DEFAULTPATH);
 #endif
+
+    for (i = 1; i <= NUMPARTS; i++) {
+	sprintf(fname, EXCFILE, searchdir, partnames[i]);
+	if ((exc_fps[i] = fopen(fname, "r")) == NULL) {
+	    sprintf(msgbuf,
+		    "WordNet library error: Can't open exception file(%s)\n\n",
+		    fname);
+	    display_message(msgbuf);
+	    openerr = -1;
+	}
+    }
+    return(openerr);
+}
+
+// Xin Added
+static int do_init2(char* path)
+{
+    int i, openerr;
+
+    char searchdir[256], fname[256];
+
+    openerr = 0;
+		
+	sprintf(searchdir, path);
 
     for (i = 1; i <= NUMPARTS; i++) {
 	sprintf(fname, EXCFILE, searchdir, partnames[i]);

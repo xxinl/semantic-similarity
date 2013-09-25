@@ -23,7 +23,7 @@ void WordnetExtended::build_synset_adjacency_list(const std::vector<std::string>
 	if(!OpenDB)
 	{
 		// wninit return 0 as no error
-		if(wninit())
+		if(wninit2(&DICT_PATH[0]))
 		{			
 			std::cout << "Failed to open wordnet files" << std::endl;
 			throw;
@@ -196,7 +196,7 @@ void WordnetExtended::normalization(std::vector<std::string> & v)
 	if(!OpenDB)
 	{
 		// wninit return 0 as no error
-		if(wninit())
+		if(wninit2(&DICT_PATH[0]))
 		{			
 			std::cout << "Failed to open wordnet files" << std::endl;
 			throw;

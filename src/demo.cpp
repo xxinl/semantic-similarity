@@ -17,7 +17,7 @@ void print_graph(we::UndirectedGraph & g);
 
 int main (int argc, char **argv) {
 
-	wninit();
+	//wninit2();
 
 	//auto test0 = in_wn("boys",ALL_POS);
 	//test0 = in_wn("boy",ALL_POS);
@@ -27,7 +27,7 @@ int main (int argc, char **argv) {
 	//auto test3 = findtheinfo_ds("boy", NOUN, HYPERPTR, 2);
 	//auto test2 = read_synset(NOUN, 9890332, "boy");
 
-	we we;
+	we we("C:\\Users\\XinL\\Downloads\\libs\\WordNet-3.0\\dict");
 	we::UndirectedGraph g;
 
 	std::vector<std::string> v(2);
@@ -42,15 +42,16 @@ int main (int argc, char **argv) {
 
 	//we.normalization(v);
 
-	SentenceSimilarityLi2006 ss;
+	SentenceSimilarityLi2006 ss("C:\\Users\\XinL\\Downloads\\libs\\WordNet-3.0\\dict");
 
-	auto s = ss.compute_similarity("boy", "girl");
-	s = ss.compute_similarity("boy", "female");
-	s = ss.compute_similarity("i be boy", "he be car");
-	s = ss.compute_similarity("i be girl", "he be car");
-	s = ss.compute_similarity("i am a boy", "he has cars");
+	auto s = ss.compute_similarity("boy", "girl", g);
+		print_graph(g);
+	s = ss.compute_similarity("boy", "female", g);
+	s = ss.compute_similarity("i be boy", "he be car", g);
+	s = ss.compute_similarity("i be girl", "he be car", g);
+	s = ss.compute_similarity("i am a boy", "he has cars", g);
 
-	s = ss.compute_similarity("i run into a hole", "John drinks beer");
+	s = ss.compute_similarity("i run into a hole", "John drinks beer", g);
 
 	//morphinit();
 	//auto t2 = morphstr("boys", NOUN);

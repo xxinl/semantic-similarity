@@ -19,22 +19,19 @@ typedef WordnetExtended we;
 const float _S_ALPHA = 0.2;
 const float _S_BETA = 0.45;
 
-SentenceSimilarityLi2006::SentenceSimilarityLi2006(){}
-SentenceSimilarityLi2006::~SentenceSimilarityLi2006(){}
-
-//extern void print_graph(const we::UndirectedGraph & g);
 
 float get_cosine_similarity(const std::vector<float> & sim1, const std::vector<float> & si2);
 float calc_sim(int length, int depth);
 
-float SentenceSimilarityLi2006::compute_similarity(const std::string & s1, const std::string & s2)
+
+float SentenceSimilarityLi2006::compute_similarity(const std::string & s1, const std::string & s2, WordnetExtended::UndirectedGraph & ret_graph)
 {
 	//TODO validate input params
 
 	boost::tokenizer<> tok1(s1), tok2(s2);
 	std::vector<std::string> v1(tok1.begin(), tok1.end()), v2(tok2.begin(), tok2.end());
 
-	we we;
+	we we(WN_DICT_PATH);
 	we.normalization(v1);
 	we.normalization(v2);
 
@@ -56,7 +53,6 @@ float SentenceSimilarityLi2006::compute_similarity(const std::string & s1, const
 
 	// build corpus graph
 	we.build_synset_adjacency_list(corpus, graph);
-	//print_graph(graph);
 
 	// semilarity vectors
 	std::vector<float> sim1(corpus.size()), sim2(corpus.size());
@@ -117,6 +113,7 @@ float SentenceSimilarityLi2006::compute_similarity(const std::string & s1, const
 		}
 	}
 
+	ret_graph = graph;
 	return get_cosine_similarity(sim1, sim2);
 }
 

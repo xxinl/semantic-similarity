@@ -24,7 +24,7 @@ class SentenceSimilarity {
 	 virtual ~SentenceSimilarity(){};
 
   ///
-	virtual float compute_similarity(const std::string &, const std::string &) = 0;
+	virtual float compute_similarity(const std::string &, const std::string &, WordnetExtended::UndirectedGraph &) = 0;
 };
 
 
@@ -37,12 +37,19 @@ class SentenceSimilarityLi2006 : public SentenceSimilarity{
 
 	public:
 		/// Constructor 
-		SentenceSimilarityLi2006();
+		SentenceSimilarityLi2006(std::string wn_path)
+		{
+			WN_DICT_PATH = wn_path;
+		};
+
 		/// Destructor
-		~SentenceSimilarityLi2006();
+		~SentenceSimilarityLi2006(){};
+
+		// wordnet dict path
+		std::string WN_DICT_PATH;
 
 		/// compute similarity between two sentences
-		float compute_similarity(const std::string &, const std::string &);
+		float compute_similarity(const std::string &, const std::string &, WordnetExtended::UndirectedGraph &);
 };
 
 #endif
