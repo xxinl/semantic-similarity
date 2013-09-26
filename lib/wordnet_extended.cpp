@@ -6,24 +6,23 @@
 //=======================================================================
 
 #include <math.h>  
+#include <fstream>
 
 #include <boost/graph/breadth_first_search.hpp>
 
 #include "wordnet_extended.h"
 
-
-void mark_edge_depth(const WordnetExtended::vertex_t v, const WordnetExtended::UndirectedGraph & g, int depth,
-										 std::vector<WordnetExtended::vertex_t> & passed_vertices);
+typedef WordnetExtended we;
 
 
 // TODO should check and ensure all pointers get deleted at appropriate time, and if any memory leak
-void WordnetExtended::build_synset_adjacency_list(const std::vector<std::string> & words, UndirectedGraph &adj_list)
+void we::build_synset_adjacency_list(const std::vector<std::string> & words, UndirectedGraph &adj_list)
 {	
 	// TODO debug to here always true
 	if(!OpenDB)
 	{
 		// wninit return 0 as no error
-		if(wninit2(&DICT_PATH[0]))
+		if(wninit2(&_wn_dict_path[0]))
 		{			
 			std::cout << "Failed to open wordnet files" << std::endl;
 			throw;
@@ -108,11 +107,11 @@ void WordnetExtended::build_synset_adjacency_list(const std::vector<std::string>
 	std::vector<vertex_t> passed_vertices;
 
 	// update edge weight using depth to its root synset
-	for(std::vector<WordnetExtended::vertex_t>::iterator it = root_vertices.begin(); it != root_vertices.end(); ++it)
-		mark_edge_depth(*it, adj_list, 1, passed_vertices);
+	for(std::vector<we::vertex_t>::iterator it = root_vertices.begin(); it != root_vertices.end(); ++it)
+		mark_depth(*it, adj_list, 1, passed_vertices);
 }
 
-int WordnetExtended::compute_distance(const UndirectedGraph &adj_list, const std::string & w1, const std::string & w2,
+int we::compute_distance(const UndirectedGraph &adj_list, const std::string & w1, const std::string & w2,
 																				vertex_t & v_w1, vertex_t & v_w2)
 {
 	// if not found return -1;
@@ -179,7 +178,7 @@ int WordnetExtended::compute_distance(const UndirectedGraph &adj_list, const std
 	return ret_dis;
 }
 
-WordnetExtended::vertex_t WordnetExtended::find_vertex(const UndirectedGraph & adj_list, long hereiam, char *pos)
+we::vertex_t we::find_vertex(const UndirectedGraph & adj_list, long hereiam, char *pos)
 {
 	boost::graph_traits < UndirectedGraph >::vertex_iterator vi, vend;
 	for (boost::tie(vi, vend) = boost::vertices(adj_list); vi != vend; ++vi) 
@@ -191,12 +190,12 @@ WordnetExtended::vertex_t WordnetExtended::find_vertex(const UndirectedGraph & a
 	return -1;
 }
 
-void WordnetExtended::normalization(std::vector<std::string> & v)
+void we::normalization(std::vector<std::string> & v)
 {
 	if(!OpenDB)
 	{
 		// wninit return 0 as no error
-		if(wninit2(&DICT_PATH[0]))
+		if(wninit2(&_wn_dict_path[0]))
 		{			
 			std::cout << "Failed to open wordnet files" << std::endl;
 			throw;
@@ -227,21 +226,56 @@ void WordnetExtended::normalization(std::vector<std::string> & v)
 // update edge weight using depth 
 //   depth fisrt loop
 // TODO pass w_map as pointer
-void mark_edge_depth(const WordnetExtended::vertex_t v, const WordnetExtended::UndirectedGraph & g, int depth,
-										 std::vector<WordnetExtended::vertex_t> & passed_vertices)
+void we::mark_depth(const we::vertex_t v, const we::UndirectedGraph & g, int depth,
+										 std::vector<we::vertex_t> & passed_vertices)
 {	
 	passed_vertices.push_back(v);
 
-	boost::graph_traits<WordnetExtended::UndirectedGraph>::out_edge_iterator eo, eo_end;
+	boost::graph_traits<we::UndirectedGraph>::out_edge_iterator eo, eo_end;
 	for (boost::tie(eo, eo_end) = out_edges(v, g); eo != eo_end; ++eo)
 	{		
-		WordnetExtended::vertex_t s  = source(*eo, g);
-		WordnetExtended::vertex_t t  = target(*eo, g);
+		we::vertex_t s  = source(*eo, g);
+		we::vertex_t t  = target(*eo, g);
 
 		g[s] -> depth = depth;
 		if(std::find(passed_vertices.begin(), passed_vertices.end(), t) != passed_vertices.end())
 			continue;
 
-		mark_edge_depth(t, g, depth + 1, passed_vertices);
+		mark_depth(t, g, depth + 1, passed_vertices);
 	}
+}
+
+///Li et al.(2006) 4.2.2
+float we::get_freq_weight(const std::string & word)
+{
+	if(!_freq_dict_loaded)
+	{
+		load_freq_dict();
+	}
+
+	int freq = 0;
+	auto it = _freq_dict.find(word);
+	if(it != _freq_dict.end())
+		freq = it->second;
+
+	return 1 - (log(freq + 1) / log(_freq_total + 1));
+}
+
+void we::load_freq_dict()
+{
+	std::ifstream infile(_freq_dict_path);
+
+	std::string word;
+	int freq = 0;
+	int freq_total = 0;
+
+	while (infile >> word >> freq)
+	{
+		std::transform(word.begin(), word.end(), word.begin(), ::tolower);
+		_freq_dict.insert(make_pair(word, freq));
+		freq_total += freq; 
+	}
+
+	_freq_total = freq_total;
+	_freq_dict_loaded = true;
 }
