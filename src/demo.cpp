@@ -59,7 +59,7 @@ int main (int argc, char **argv) {
 	auto s = ss.compute_similarity("boy", "girl", g);
 	//s = ss.compute_similarity("hammer", "nail", g);
 	//print_graph(g);
-	s = ss.compute_similarity("i like that bachelor", "i like that unmarrided man", g); //0.561
+	s = ss.compute_similarity("i like that bachelor", "i like that unmarried man", g); //0.561
 	print_sim("i like that bachelor", "i like that unmarrided man", s, 0.561);
 	s = ss.compute_similarity("John is very nice", "is John very nice", g); //0.977
 	print_sim("John is very nice", "is John very nice", s, 0.977);
