@@ -34,20 +34,20 @@ int main (int argc, char **argv) {
 	//auto test3 = findtheinfo_ds("boy", NOUN, HYPERPTR, 2);
 	//auto test2 = read_synset(NOUN, 9890332, "boy");
 
-	we we("C:\\Users\\XinL\\Downloads\\libs\\WordNet-3.0\\dict",
-		"C:\\Projects\\sentence-similarity\\dicts\\freq.txt");
+	//we we("C:\\Users\\XinL\\Downloads\\libs\\WordNet-3.0\\dict",
+	//	"C:\\Projects\\sentence-similarity\\dicts\\freq.txt");
 	we::UndirectedGraph g;
 
-	std::vector<std::string> v(2);
-	v[0] = "hammer";
-	v[1] = "nail";
+	//std::vector<std::string> v(2);
+	//v[0] = "hammer";
+	//v[1] = "nail";
 
-	we.build_synset_adjacency_list(v, g);
+	//we.build_synset_adjacency_list(v, g);
 
-	print_graph(g);
-	
-	we::vertex_t v1, v2;
-	auto dis = we.compute_distance(g, "hammer", "nail", v1, v2);
+	//print_graph(g);
+	//
+	//we::vertex_t v1, v2;
+	//auto dis = we.compute_distance(g, "hammer", "nail", v1, v2);
 
 	//we.normalization(v);
 
