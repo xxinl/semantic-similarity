@@ -37,18 +37,23 @@ class SentenceSimilarityLi2006 : public SentenceSimilarity{
 		const float _S_ALPHA; //0.2f;
 		const float _S_BETA; //0.45f;
 
-		// frequency dict path
-		std::string _freq_dict_path;
-		// wordnet dict path
-		std::string _wn_dict_path;
+		WordnetExtended _wne;
+
+		void build_sim_vector(WordnetExtended & wne,  WordnetExtended::UndirectedGraph & graph,
+			const std::vector<std::string> & s, const std::vector<std::string> & corpus, std::vector<float> & sim);
 
 		float calc_cos_similarity(const std::vector<float> & sim1, const std::vector<float> & si2);
+
 		float calc_word_sim(int length, int depth);
 
 	public:
 		/// Constructor 
-		SentenceSimilarityLi2006(std::string wn_path, std::string freq_path) 
-			: _wn_dict_path(wn_path), _freq_dict_path(freq_path), _S_ALPHA(0.2), _S_BETA(0.45){};
+		SentenceSimilarityLi2006(WordnetExtended wne) 
+			: _wne(wne), _S_ALPHA(0.2), _S_BETA(0.45){};
+
+		//SentenceSimilarityLi2006(const SentenceSimilarityLi2006& other ) :
+		//	_wne(other._wne), _S_ALPHA(0.2), _S_BETA(0.45)
+		//{};
 
 		/// Destructor
 		~SentenceSimilarityLi2006(){};

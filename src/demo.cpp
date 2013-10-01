@@ -34,8 +34,8 @@ int main (int argc, char **argv) {
 	//auto test3 = findtheinfo_ds("boy", NOUN, HYPERPTR, 2);
 	//auto test2 = read_synset(NOUN, 9890332, "boy");
 
-	//we we("C:\\Users\\XinL\\Downloads\\libs\\WordNet-3.0\\dict",
-	//	"C:\\Projects\\sentence-similarity\\dicts\\freq.txt");
+	we we("C:\\Users\\XinL\\Downloads\\libs\\WordNet-3.0\\dict",
+		"C:\\Projects\\sentence-similarity\\dicts\\freq.txt");
 	we::UndirectedGraph g;
 
 	//std::vector<std::string> v(2);
@@ -53,8 +53,7 @@ int main (int argc, char **argv) {
 
 	//auto freq_test = we.get_freq_weight("boy");
 
-	SentenceSimilarityLi2006 ss("C:\\Users\\XinL\\Downloads\\libs\\WordNet-3.0\\dict",
-		"C:\\Projects\\sentence-similarity\\dicts\\freq.txt");
+	SentenceSimilarityLi2006 ss(we);
 
 	auto s = ss.compute_similarity("boy", "girl", g);
 	//s = ss.compute_similarity("hammer", "nail", g);

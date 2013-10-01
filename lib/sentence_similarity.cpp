@@ -7,24 +7,35 @@
 
 #include <iterator>
 #include <math.h>
+//#include <thread>
 
 #include <boost/tokenizer.hpp>
+#include <boost/thread.hpp>
 
 #include "sentence_similarity.h"
+
+
+#ifndef _DEBUG
+# define DEBUG_PRINT(s)
+#else
+# define DEBUG_PRINT(s) std::cerr << s << std::endl
+#endif
+
 
 typedef WordnetExtended we;
 
 
-float SentenceSimilarityLi2006::compute_similarity(const std::string & s1, const std::string & s2, we::UndirectedGraph & ret_graph)
+float SentenceSimilarityLi2006::compute_similarity(const std::string & s1, const std::string & s2, we::UndirectedGraph & graph)
 {
 	//TODO validate input params
+
+	graph.clear();
 
 	boost::tokenizer<> tok1(s1), tok2(s2);
 	std::vector<std::string> v1(tok1.begin(), tok1.end()), v2(tok2.begin(), tok2.end());
 
-	we we(_wn_dict_path, _freq_dict_path);
-	we.normalization(v1);
-	we.normalization(v2);
+	_wne.normalization(v1);
+	_wne.normalization(v2);
 
 	// build word corpus from two sentenses
 	std::vector<std::string> corpus;
@@ -40,85 +51,68 @@ float SentenceSimilarityLi2006::compute_similarity(const std::string & s1, const
 		}
 	}
 
-	we::UndirectedGraph graph;
-
 	// build corpus graph
-	we.build_synset_adjacency_list(corpus, graph);
+	_wne.build_synset_adjacency_list(corpus, graph);
 
 	// semilarity vectors
-	std::vector<float> sim1(corpus.size()), sim2(corpus.size());
+	std::vector<float> sim1, sim2;
+
+	build_sim_vector(_wne, graph, v1, corpus, sim1);
+	build_sim_vector(_wne, graph, v2, corpus, sim2);
+
+	/*boost::thread t1(boost::bind(&SentenceSimilarityLi2006::build_sim_vector, this, _wne, graph, v1, corpus, boost::ref(sim1)));
+	boost::thread t2(boost::bind(&SentenceSimilarityLi2006::build_sim_vector, this, _wne, graph, v2, corpus, boost::ref(sim2)));
 	
-	// loop all words in corpus
-	for(std::vector<std::string>::iterator it_w_corpus = corpus.begin(); it_w_corpus != corpus.end(); ++it_w_corpus)
-	{
-		float freq_weight_w_corpus = we.get_freq_weight(*it_w_corpus);
+	t1.join();
+	t2.join();*/
 
-		// build similarity vectors for s1
-		if(std::find(v1.begin(), v1.end(), *it_w_corpus) == v1.end()) 
-		{
-			// loop all words in s1 to get the synset has max similarity
-			float max_sim = 0;
-			std::string max_freq_w_s1;
-			for(std::vector<std::string>::iterator it_s1_w = v1.begin(); it_s1_w != v1.end(); ++it_s1_w)
-			{
-				we::vertex_t v_w_s1, v_w_corpus;
-				int path_len = we.compute_distance(graph, *it_s1_w, *it_w_corpus, v_w_s1, v_w_corpus);
-				// if both *it_t1 and *it are in the graph
-				if(path_len != INT_MAX && v_w_s1 != -1 && v_w_corpus != -1)
-				{
-					int depth = graph[v_w_s1]->depth;
-					float sim = calc_word_sim(path_len, depth);
-					if(max_sim < sim)
-					{
-						max_sim = sim;
-						max_freq_w_s1 = *it_s1_w;
-					}
-				}
-			}
-
-			float freq_weight_w_s1 = max_sim == 0 ? 0 : we.get_freq_weight(max_freq_w_s1);
-			// +1 to smooth 0 lenth
-			sim1.push_back(max_sim * freq_weight_w_corpus * freq_weight_w_s1);
-		}
-		else{
-			sim1.push_back(1 * freq_weight_w_corpus * freq_weight_w_corpus);
-		}
-
-		// build similarity vectors for s2
-		if(std::find(v2.begin(), v2.end(), *it_w_corpus) == v2.end()) 
-		{
-			// loop all words in s2 to get the synset has max similarity
-			float max_sim = 0;
-			std::string max_freq_w_s2;
-			for(std::vector<std::string>::iterator it_s2_w = v2.begin(); it_s2_w != v2.end(); ++it_s2_w)
-			{
-				we::vertex_t v_w_s2, v_w_corpus;
-				int path_len = we.compute_distance(graph, *it_s2_w, *it_w_corpus, v_w_s2, v_w_corpus);
-				// if both *it_t2 and *it are in the graph
-				if(path_len != INT_MAX && v_w_s2 != -1 && v_w_corpus != -1)
-				{					
-					int depth = graph[v_w_s2]->depth;
-					float sim = calc_word_sim(path_len, depth);
-					if(max_sim < sim)
-					{
-						max_sim = sim;
-						max_freq_w_s2 = *it_s2_w;
-					}
-				}
-			}
-
-			float freq_weight_w_s2 = max_sim == 0 ? 0 : we.get_freq_weight(max_freq_w_s2);
-			// +1 to smooth 0 lenth
-			sim2.push_back(max_sim * freq_weight_w_corpus * freq_weight_w_s2);
-		}
-		else{
-			sim2.push_back(1* freq_weight_w_corpus * freq_weight_w_corpus);
-		}
-	}
-
-	ret_graph = graph;
 	return calc_cos_similarity(sim1, sim2);
 }
+
+
+void SentenceSimilarityLi2006::build_sim_vector(we & wne,  we::UndirectedGraph & graph,
+																															const std::vector<std::string> & s, 
+																															const std::vector<std::string> & corpus,
+																															std::vector<float> & sim)
+{
+	// loop all words in corpus
+	for(std::vector<std::string>::const_iterator it_corpus = corpus.begin(); it_corpus != corpus.end(); ++it_corpus)
+	{
+		float freq_weight_w_corpus = wne.get_freq_weight(*it_corpus);
+
+		// build similarity vectors for s
+		if(std::find(s.begin(), s.end(), *it_corpus) == s.end()) 
+		{
+			// loop all words in s to get the synset has max similarity
+			float max_sim = 0;
+			std::string max_sim_word;
+			for(std::vector<std::string>::const_iterator it_s = s.begin(); it_s != s.end(); ++it_s)
+			{
+				we::vertex_t v_w_s, v_w_corpus;
+				int path_len = wne.compute_distance(graph, *it_s, *it_corpus, v_w_s, v_w_corpus);
+				// if both *it_s and *it_corpus are in the graph
+				if(path_len != INT_MAX && v_w_s != -1 && v_w_corpus != -1)
+				{
+					int depth = graph[v_w_s]->depth;
+					float sim = calc_word_sim(path_len, depth);
+					if(max_sim < sim)
+					{
+						max_sim = sim;
+						max_sim_word = *it_s;
+					}
+				}
+			}
+
+			float freq_weight_w_s1 = max_sim == 0 ? 0 : wne.get_freq_weight(max_sim_word);
+			// +1 to smooth 0 lenth
+			sim.push_back(max_sim * freq_weight_w_corpus * freq_weight_w_s1);
+		}
+		else{
+			sim.push_back(1 * freq_weight_w_corpus * freq_weight_w_corpus);
+		}
+	}
+}
+
 
 float SentenceSimilarityLi2006::calc_cos_similarity(const std::vector<float> & sim1, const std::vector<float> & sim2)
 {
@@ -135,6 +129,7 @@ float SentenceSimilarityLi2006::calc_cos_similarity(const std::vector<float> & s
 
 	return numerator / (sqrt(denominator1) * sqrt(denominator2));
 }
+
 
 // Li et al.(2006) 3.1.3
 float SentenceSimilarityLi2006::calc_word_sim(int length, int depth)
