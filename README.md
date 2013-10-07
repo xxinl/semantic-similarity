@@ -1,4 +1,4 @@
-[Sentence-Similarity](http://xxinl.github.io/sentence-similarity)
+[Semantic-Sentence-Similarity](http://xxinl.github.io/semantic-similarity)
 ===================
 C++ tool lib to calculate semantic similarity between two sentences using method described in paper 
 
