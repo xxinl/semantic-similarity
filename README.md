@@ -1,6 +1,6 @@
 [Semantic-Similarity](http://xxinl.github.io/semantic-similarity)
 ===================
-C++ tool lib to calculate semantic similarity between two sentences using method described in paper 
+C++ tool lib to calculate semantic similarity between two sentences based on method described in paper 
 
 *"Sentence Similarity Based on Semantic Nets and Corpus Statistics" Yuhua Li et al, 2006.*
 
