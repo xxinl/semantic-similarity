@@ -10,7 +10,7 @@
 //#include <thread>
 
 #include <boost/tokenizer.hpp>
-#include <boost/thread.hpp>
+//#include <boost/thread.hpp>
 
 #include "sentence_similarity.h"
 
