@@ -32,19 +32,21 @@ Global
 		{0D882257-D6CE-41FC-B4E8-D03A3D09C7AB}.Release|Win32.Build.0 = Release|Win32
 		{0D882257-D6CE-41FC-B4E8-D03A3D09C7AB}.Release|x64.ActiveCfg = Release|x64
 		{0D882257-D6CE-41FC-B4E8-D03A3D09C7AB}.Release|x64.Build.0 = Release|x64
-		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Any CPU.Build.0 = Debug|x86
+		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Win32.Build.0 = Debug|Any CPU
+		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Win32.ActiveCfg = Debug|x86
+		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|Win32.Build.0 = Debug|x86
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Debug|x64.Build.0 = Debug|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|Any CPU.Build.0 = Release|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|Win32.ActiveCfg = Release|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|x64.ActiveCfg = Release|Any CPU
+		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
