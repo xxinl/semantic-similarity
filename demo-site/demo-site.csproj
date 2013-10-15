@@ -161,11 +161,14 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\DemoSimResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Areas\HelpPage\HelpPage.css" />
-    <Content Include="demo.html" />
+    <Content Include="demo\demo.html" />
+    <Content Include="demo\jquery.jOrgChart.css" />
+    <Content Include="demo\jquery.jOrgChart.js" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Areas\HelpPage\Views\Web.config" />
@@ -196,7 +199,6 @@
   <ItemGroup>
     <Folder Include="Content\" />
     <Folder Include="Images\" />
-    <Folder Include="Models\" />
     <Folder Include="Scripts\" />
   </ItemGroup>
   <ItemGroup>
