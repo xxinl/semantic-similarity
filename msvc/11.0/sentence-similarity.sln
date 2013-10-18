@@ -45,6 +45,7 @@ Global
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|Win32.ActiveCfg = Release|Any CPU
+		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|Win32.Build.0 = Release|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|x64.ActiveCfg = Release|Any CPU
 		{90BE36D8-94D4-4020-9D8D-C07E2EE7A454}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection

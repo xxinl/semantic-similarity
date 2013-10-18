@@ -38,7 +38,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
@@ -203,6 +203,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\PublishProfiles\semantic-similarity - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\semantic-similarity - Web Deploy.pubxml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
