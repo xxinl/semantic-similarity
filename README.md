@@ -5,6 +5,9 @@ C++ tool lib to calculate semantic similarity between two sentences based on met
 *"Sentence Similarity Based on Semantic Nets and Corpus Statistics" Yuhua Li et al, 2006.*
 
 
+###[Live Demo](http://semantic-similarity.azurewebsites.net/demo/demo.html)
+
+
 ###Dependencies
 Boost and Wordnet C API
 
