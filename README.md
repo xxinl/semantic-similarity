@@ -5,14 +5,14 @@ C++ tool lib to calculate semantic similarity between two sentences based on met
 *"Sentence Similarity Based on Semantic Nets and Corpus Statistics" Yuhua Li et al, 2006.*
 
 
-###[Live Demo](http://semantic-similarity.azurewebsites.net/demo/demo.html)
+### [Live Demo](http://semantic-similarity.azurewebsites.net/demo/demo.html)
 
 
-###Dependencies
+### Dependencies
 Boost and Wordnet C API
 
 
-###Demo
+### Demo
     SentenceSimilarityLi2006 ss;
     s = ss.compute_similarity("it is a dog", "it is a log");
     s = ss.compute_similarity("it is a dog", "it is a pig");
@@ -37,10 +37,10 @@ Boost and Wordnet C API
     "i have a hammer" vs "take some apples" sim:0.0757834
 	
 	
-###Setup
+### Setup
 You will need to download Wordnet3.0/3.1 dictionary
     
     
-###Contact
+### Contact
 *tonyxliu at hotmail.co.uk*
 
